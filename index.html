@@ -5,74 +5,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>1RM Calculator</title>
+    <title>1RM Calculator - Old School Iron</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #121212; user-select: none; }
-        input[type=range] { -webkit-appearance: none; background: #1f2937; height: 10px; border-radius: 5px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 30px; width: 30px; border-radius: 50%; background: #dc2626; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        .safe-top { padding-top: env(safe-area-inset-top, 20px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #374151; /* gray-700 */
+            height: 6px;
+            border-radius: 3px;
+            width: 100%;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #121212;
+            border: 6px solid #dc2626; /* red-600 */
+            cursor: pointer;
+            box-shadow: 0 0 0 2px #121212;
+        }
+
+        .safe-top { padding-top: env(safe-area-inset-top, 0px); }
     </style>
 </head>
-<body class="text-white">
+<body class="text-white selection:bg-red-900">
 
-    <header class="bg-[#b30000] safe-top shadow-xl sticky top-0 z-20">
-        <div class="p-4 text-center font-black uppercase tracking-widest text-sm">Old School Iron</div>
-        <div class="flex text-[10px] font-black border-t border-white/10">
-            <div class="flex-1 text-center py-3 border-b-4 border-white">1RM Calculator</div>
-            <div class="flex-1 text-center py-3 opacity-40">Pullup Calc</div>
+    <!-- Top Navigation -->
+    <header class="bg-[#b30000] safe-top shadow-md sticky top-0 z-20">
+        <div class="p-4 flex justify-center items-center font-bold text-white text-base">
+            <span>OLD SCHOOL IRON</span>
+            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+        <div class="flex text-[13px] font-bold bg-[#121212] border-b border-gray-800">
+            <div class="flex-1 text-center py-3.5 border-b-2 border-red-600 text-red-500 uppercase">1RM Calculator</div>
+            <div class="flex-1 text-center py-3.5 text-gray-500 uppercase">Pullup Calculator</div>
         </div>
     </header>
 
-    <main class="p-6 max-w-md mx-auto">
-        <!-- Weight -->
-        <div class="mb-10 text-center">
-            <h3 class="text-[10px] uppercase tracking-widest text-gray-500 mb-2">Weight Lifted</h3>
-            <div class="text-5xl font-black mb-6"><span id="w-val">100</span><span class="text-red-600 text-xl ml-1" id="u-val">kg</span></div>
-            <input id="w-slider" type="range" min="2.5" max="400" step="2.5" value="100">
-        </div>
+    <main class="p-4 md:p-6 max-w-2xl mx-auto mb-6">
+        <p class="text-gray-400 text-sm mb-8 leading-relaxed pr-4">
+            Drag the weight and reps sliders to the highest weight you have lifted and the amount of reps at that weight. Your One Rep Max will appear at the top and all your percentages will appear below it.
+        </p>
 
-        <!-- Reps -->
-        <div class="mb-10 text-center">
-            <h3 class="text-[10px] uppercase tracking-widest text-gray-500 mb-2">Reps Completed</h3>
-            <div class="text-5xl font-black mb-6"><span id="r-val">5</span><span class="text-red-600 text-xl ml-1">reps</span></div>
-            <input id="r-slider" type="range" min="1" max="15" step="1" value="5">
-        </div>
-
-        <!-- Result -->
-        <div class="bg-[#1a1a1a] p-8 rounded-3xl border border-gray-800 text-center shadow-2xl">
-            <h3 class="text-[10px] uppercase tracking-widest text-gray-500 mb-2">One Rep Max</h3>
-            <div class="text-7xl font-black text-white"><span id="orm">113</span></div>
-            <div id="results-list" class="mt-8 space-y-4 text-left border-t border-gray-800 pt-6">
-                <!-- Percentages will load here -->
+        <!-- Unit Selection -->
+        <section class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-wider mb-1 text-sm">Unit of Measurement</h3>
+            <p class="text-gray-500 text-xs mb-5">Enter the weight measurement you would like to use to calculate your one rep max.</p>
+            
+            <div class="space-y-4">
+                <label class="flex items-center space-x-3 cursor-pointer group" onclick="setUnit('kg')">
+                    <div id="radio-kg" class="w-6 h-6 rounded-full border-[3px] flex items-center justify-center border-red-600 transition-colors">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-600"></div>
+                    </div>
+                    <span class="text-gray-200 text-[15px]">Metric (Kg)</span>
+                </label>
+                <label class="flex items-center space-x-3 cursor-pointer group" onclick="setUnit('lb')">
+                    <div id="radio-lb" class="w-6 h-6 rounded-full border-[3px] flex items-center justify-center border-gray-600 transition-colors">
+                        <div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+                    </div>
+                    <span class="text-gray-200 text-[15px]">Imperial (lb)</span>
+                </label>
             </div>
-        </div>
+        </section>
+
+        <!-- Weight Slider -->
+        <section class="mb-10">
+            <h3 class="text-white font-bold uppercase tracking-wider mb-1 text-sm">Weight Lifted</h3>
+            <p class="text-gray-500 text-xs mb-4">To help determine your one rep max please enter the amount of weight you lifted during your set.</p>
+            
+            <div class="flex flex-col">
+                <div class="text-white font-bold text-lg mb-3 pl-[3.25rem]">
+                    <span id="weight-display">2.5</span> <span id="unit-label">kg</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="adjustWeight(-1)" class="w-10 h-10 flex-shrink-0 rounded-full border-2 border-red-600 flex items-center justify-center text-red-600 active:bg-red-600/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                    </button>
+                    <input id="weight-slider" type="range" min="2.5" max="400" step="2.5" value="2.5" class="w-full">
+                    <button onclick="adjustWeight(1)" class="w-10 h-10 flex-shrink-0 rounded-full border-2 border-red-600 flex items-center justify-center text-red-600 active:bg-red-600/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reps Slider -->
+        <section class="mb-6">
+            <h3 class="text-white font-bold uppercase tracking-wider mb-1 text-sm">Reps Completed</h3>
+            <p class="text-gray-500 text-xs mb-4">How many reps did you complete with the weight you entered?</p>
+            
+            <div class="flex flex-col">
+                <div class="text-white font-bold text-lg mb-3 pl-[3.25rem]">
+                    <span id="reps-display">1</span> reps
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="adjustReps(-1)" class="w-10 h-10 flex-shrink-0 rounded-full border-2 border-red-600 flex items-center justify-center text-red-600 active:bg-red-600/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                    </button>
+                    <input id="reps-slider" type="range" min="1" max="15" step="1" value="1" class="w-full">
+                    <button onclick="adjustReps(1)" class="w-10 h-10 flex-shrink-0 rounded-full border-2 border-red-600 flex items-center justify-center text-red-600 active:bg-red-600/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <script>
-        const coeffs = {1:1, 2:.95, 3:.926, 4:.9, 5:.882, 6:.858, 7:.824, 8:.809, 9:.779, 10:.76, 11:.745, 12:.73, 13:.71, 14:.695, 15:.681};
-        const wS = document.getElementById('w-slider');
-        const rS = document.getElementById('r-slider');
-        
-        function update() {
-            const w = parseFloat(wS.value);
-            const r = parseInt(rS.value);
-            const orm = Math.round(w / (coeffs[r] || .681));
+    <!-- Results Section -->
+    <div class="bg-[#1a1a1a] p-4 md:p-6 pb-20 rounded-t-3xl border-t border-gray-800 shadow-2xl relative z-10">
+        <div class="max-w-2xl mx-auto">
             
-            document.getElementById('w-val').innerText = w;
-            document.getElementById('r-val').innerText = r;
-            document.getElementById('orm').innerText = orm;
+            <div class="mb-10 mt-2">
+                <h3 class="text-white font-bold uppercase tracking-wider mb-1 text-sm">Your One Rep Max</h3>
+                <p class="text-gray-500 text-xs mb-3">Based on the numbers you provided your one rep max is.</p>
+                <div class="text-5xl font-bold text-white tracking-tight">
+                    <span id="orm-display">3</span> <span class="text-2xl font-normal text-gray-400" id="orm-unit">kg</span>
+                </div>
+            </div>
 
-            let html = '';
-            [95, 90, 85, 80, 75].forEach(p => {
-                html += `<div class="flex justify-between items-center"><span class="text-gray-500 font-bold text-xs">${p}%</span><span class="font-black text-sm">${Math.round(orm * p / 100)} kg</span></div>`;
-            });
-            document.getElementById('results-list').innerHTML = html;
+            <!-- Dynamic Tables Container -->
+            <div id="tables-container" class="space-y-8"></div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Exact coefficients derived from the app's calculation logic
+        const REP_COEFFICIENTS = {
+            1: 1.000, 2: 0.950, 3: 0.926, 4: 0.900, 5: 0.882,
+            6: 0.858, 7: 0.824, 8: 0.809, 9: 0.779, 10: 0.760,
+            11: 0.745, 12: 0.730, 13: 0.710, 14: 0.695, 15: 0.681
+        };
+
+        const STANDARDS = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50];
+        const OLD_SCHOOL = [102.5, 97.5, 92.5, 87.5, 82.5, 77.5, 72.5, 67.5, 62.5, 57.5, 52.5, 47.5];
+        const EST_REPS = [1, 3, 5, 6, 7, 8, 9, 10, 12, 15];
+
+        let state = {
+            unit: 'kg',
+            weight: 2.5,
+            reps: 1,
+            orm: 0
+        };
+
+        const weightSlider = document.getElementById('weight-slider');
+        const repsSlider = document.getElementById('reps-slider');
+
+        // Round to nearest 0.5 as seen in the app
+        const roundToHalf = (num) => Math.round(num * 2) / 2;
+
+        function setUnit(u) {
+            if (state.unit === u) return;
+            state.unit = u;
+            
+            // Update UI Radios
+            document.getElementById('radio-kg').className = `w-6 h-6 rounded-full border-[3px] flex items-center justify-center transition-colors ${u === 'kg' ? 'border-red-600' : 'border-gray-600'}`;
+            document.getElementById('radio-kg').children[0].className = `w-2.5 h-2.5 rounded-full ${u === 'kg' ? 'bg-red-600' : 'bg-transparent'}`;
+            
+            document.getElementById('radio-lb').className = `w-6 h-6 rounded-full border-[3px] flex items-center justify-center transition-colors ${u === 'lb' ? 'border-red-600' : 'border-gray-600'}`;
+            document.getElementById('radio-lb').children[0].className = `w-2.5 h-2.5 rounded-full ${u === 'lb' ? 'bg-red-600' : 'bg-transparent'}`;
+            
+            // Update Slider Constraints & Convert Value
+            if (u === 'lb') {
+                weightSlider.min = 5; weightSlider.max = 880; weightSlider.step = 5;
+                state.weight = Math.max(5, Math.round((state.weight * 2.20462) / 5) * 5);
+            } else {
+                weightSlider.min = 2.5; weightSlider.max = 400; weightSlider.step = 2.5;
+                state.weight = Math.max(2.5, Math.round((state.weight / 2.20462) / 2.5) * 2.5);
+            }
+            weightSlider.value = state.weight;
+            calculate();
         }
 
-        wS.oninput = rS.oninput = update;
-        update();
+        function adjustWeight(dir) {
+            const step = parseFloat(weightSlider.step);
+            state.weight = Math.max(parseFloat(weightSlider.min), Math.min(parseFloat(weightSlider.max), state.weight + (dir * step)));
+            weightSlider.value = state.weight;
+            calculate();
+        }
+
+        function adjustReps(dir) {
+            state.reps = Math.max(1, Math.min(15, state.reps + dir));
+            repsSlider.value = state.reps;
+            calculate();
+        }
+
+        weightSlider.addEventListener('input', (e) => { state.weight = parseFloat(e.target.value); calculate(); });
+        repsSlider.addEventListener('input', (e) => { state.reps = parseInt(e.target.value); calculate(); });
+
+        function calculate() {
+            const coeff = REP_COEFFICIENTS[state.reps] || 0.681;
+            state.orm = Math.round(state.weight / coeff);
+            
+            document.getElementById('weight-display').innerText = state.weight;
+            document.getElementById('unit-label').innerText = state.unit;
+            document.getElementById('reps-display').innerText = state.reps;
+            document.getElementById('orm-display').innerText = state.orm;
+            document.getElementById('orm-unit').innerText = state.unit;
+            
+            renderTables();
+        }
+
+        function renderTables() {
+            const container = document.getElementById('tables-container');
+            container.innerHTML = `
+                ${createTable("One-Rep Max Percentages", STANDARDS, STANDARDS.map(p => roundToHalf(state.orm * (p/100))), "Percent", "%")}
+                ${createTable("Old School Iron Percentages", OLD_SCHOOL, OLD_SCHOOL.map(p => roundToHalf(state.orm * (p/100))), "Percent", "%")}
+                ${createTable("Estimated Reps & Weight", EST_REPS, EST_REPS.map(r => roundToHalf(state.orm * REP_COEFFICIENTS[r])), "Reps", "")}
+            `;
+        }
+
+        function createTable(title, headers, values, headerLabel1, headerSuffix) {
+            return `
+                <div>
+                    <h3 class="text-white font-bold uppercase tracking-wider mb-4 text-[13px]">${title}</h3>
+                    <div class="overflow-x-auto custom-scrollbar pb-3">
+                        <div class="min-w-max">
+                            <div class="flex border-b border-gray-800 pb-3 mb-3">
+                                <div class="w-24 font-bold text-gray-500 text-xs uppercase tracking-wider shrink-0">${headerLabel1}</div>
+                                ${headers.map(h => `<div class="w-20 text-center font-bold text-gray-300 text-sm shrink-0">${h}${headerSuffix}</div>`).join('')}
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-24 font-bold text-gray-500 text-xs uppercase tracking-wider shrink-0">Weight</div>
+                                ${values.map(v => `<div class="w-20 text-center font-medium text-white text-sm shrink-0">${v} <span class="text-[10px] text-gray-400">${state.unit}</span></div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize App
+        calculate();
     </script>
 </body>
 </html>
